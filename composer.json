@@ -22,7 +22,7 @@
         "aws/aws-sdk-php": "^3.324.8"
     },
 	 "extra": { 
-		"installer-name": "aws"
+		"installer-name": "amazonses"
     },
     "config": {
 		"process-timeout": 600,
