@@ -19,7 +19,7 @@
         "php": ">=7.0",
         "composer/installers": "~1.0",
         "oomphinc/composer-installers-extender": "^2.0",
-        "aws/aws-sdk-php": "^3.693.0"
+        "aws/aws-sdk-php": "^3.326.0"
     },
 	 "extra": { 
 		"installer-name": "aws"
