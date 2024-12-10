@@ -4,7 +4,7 @@ namespace aw2\amazonses;
 \aw2_library::add_service('amazonses.email_send', 'Send Amazon SES mail', ['namespace'=>__NAMESPACE__]);
 
 function email_send($atts, $content = null, $shortcode) {
-    if (\aw2_library::pre_actions('all', $atts, $content, $shortcode) == false) return;
+    //if (\aw2_library::pre_actions('all', $atts, $content, $shortcode) == false) return;
 		
     extract(\aw2_library::shortcode_atts(array(
         'email' => null,
@@ -17,11 +17,19 @@ function email_send($atts, $content = null, $shortcode) {
     // If email is null, return
     if (is_null($email)) return;
 
-    // Checking for values and setting them if not present.
-    if (!isset($email['from']['email_id'])) $email['from']['email_id'] = '';
-    if (!isset($email['to']['email_id'])) $email['to']['email_id'] = '';
-    if (!isset($email['message'])) $email['message'] = '';
-    if (!isset($email['subject'])) $email['subject'] = '';
+   // Checking for values 
+    if (!isset($email['from']['email_id']) || empty($email['from']['email_id'])) {
+        return \aw2_library::post_actions('all', 'Sender email address is missing.', $atts);
+    }
+    if (!isset($email['to']['email_id']) || empty($email['to']['email_id'])) {
+        return \aw2_library::post_actions('all', 'Recipient email address is missing.', $atts);
+    }
+    if (!isset($email['subject']) || empty($email['subject'])) {
+        return \aw2_library::post_actions('all', 'Subject is missing.', $atts);
+    }
+    if (!isset($email['message']) || empty($email['message'])) {
+        return \aw2_library::post_actions('all', 'Message is missing.', $atts);
+    }
 	
     // Get AWS credentials
     $awsKey = $email['vendor']['key'] ?? '';
@@ -90,25 +98,20 @@ function email_send($atts, $content = null, $shortcode) {
         } else {
             $response = $ses->sendEmail($emailParams);
         }
-        
-        // Setting up tracking array
-        $tracking['id'] = $response['MessageId'];
-        $tracking['status'] = 'sent_to_provider';
-        $tracking['stage'] = 'sent_to_provider';
-        
-        //set success response
-        $ack['status'] = "success";
-        $ack['response'] = $response;
-        $ack['tracking'] = $tracking;
-        $ack['input'] = $email;
-
+	if ($response['@metadata']['statusCode'] == 200){
+            // Setting up tracking array
+            $tracking['id'] = $response['MessageId'];
+            $tracking['status'] = 'sent_to_provider';
+            $tracking['stage'] = 'sent_to_provider';
+            $ack['status'] = "success";
+            $ack['tracking'] = $tracking;
+            $ack['input'] = $email;
+        }
         $return_value = $ack;
 
     } catch (\Aws\Exception\AwsException $e) {
         $return_value = "error: " . $e->getMessage();
     }
-
-    $return_value = \aw2_library::post_actions('all', $return_value, $atts);
     return $return_value;
 }
 
