@@ -21,9 +21,6 @@ function email_send($atts, $content = null, $shortcode) {
     if (!isset($email['from']['email_id']) || empty($email['from']['email_id'])) {
         return \aw2_library::post_actions('all', 'Sender email address is missing.', $atts);
     }
-    if (!isset($email['to']['email_id']) || empty($email['to']['email_id'])) {
-        return \aw2_library::post_actions('all', 'Recipient email address is missing.', $atts);
-    }
     if (!isset($email['subject']) || empty($email['subject'])) {
         return \aw2_library::post_actions('all', 'Subject is missing.', $atts);
     }
