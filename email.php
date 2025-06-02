@@ -42,6 +42,7 @@ function email_send($atts, $content = null, $shortcode) {
         $ses = new \Aws\Ses\SesClient([
             'version' => 'latest',
             'region'  => $awsRegion,
+	    'suppress_php_deprecation_warning' => true,
             'credentials' => [
                 'key'    => $awsKey,
                 'secret' => $awsSecret,
